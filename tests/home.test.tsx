@@ -21,12 +21,13 @@ const NAV_LINKS: Array<[string, string]> = [
   ['Contact', '#contact'],
 ];
 
-describe('homepage route shell (ticket 01)', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.classList.remove('dark', 'light');
-  });
+function resetTheme() {
+  localStorage.clear();
+  document.documentElement.classList.remove('dark', 'light');
+}
 
+describe('homepage route shell (ticket 01)', () => {
+  beforeEach(resetTheme);
   it('renders a sticky navbar with all 7 anchors pointing at existing sections', () => {
     render(<Home />);
     const nav = screen.getByRole('navigation', { name: /primary/i });
@@ -81,5 +82,91 @@ describe('homepage route shell (ticket 01)', () => {
     const { container } = render(<Home />);
     const results = await axe(container);
     expect(results.violations.filter((v: { impact?: string }) => v.impact === 'critical')).toHaveLength(0);
+  });
+});
+
+describe('hero + about + footer identity (ticket 02)', () => {
+  beforeEach(resetTheme);
+  it('shows role, headline, and supporting text in the hero', () => {
+    render(<Home />);
+    const hero = document.getElementById('home') as HTMLElement;
+    expect(
+      within(hero).getByText('Computer Science Student | Full-Stack Web Developer')
+    ).toBeInTheDocument();
+    expect(
+      within(hero).getByRole('heading', { name: /Building Modern Web Experiences/i })
+    ).toBeInTheDocument();
+    expect(within(hero).getByText(/practical, scalable, and user-focused/i)).toBeInTheDocument();
+  });
+
+  it('wires hero CTAs to sections and resume to a mailto fallback', () => {
+    render(<Home />);
+    expect(screen.getByRole('link', { name: /View My Projects/i })).toHaveAttribute(
+      'href',
+      '#projects'
+    );
+    expect(screen.getByRole('link', { name: /Contact Me/i })).toHaveAttribute(
+      'href',
+      '#contact'
+    );
+    const resume = screen.getByRole('link', { name: /Download Resume/i });
+    expect(resume.getAttribute('href')).toMatch(
+      /^mailto:neiljustinmarcelo@gmail\.com\?subject=Resume%20Request$/
+    );
+    expect(resume.getAttribute('title')).toMatch(/available on request/i);
+  });
+
+  it('renders a code preview visual with floating tech icons', () => {
+    render(<Home />);
+    expect(screen.getByRole('img', { name: /code preview/i })).toBeInTheDocument();
+    expect(screen.getByTestId('floating-icons').querySelectorAll('svg')).not.toHaveLength(0);
+  });
+
+  it('lists all seven about highlights', () => {
+    render(<Home />);
+    const about = document.getElementById('about');
+    expect(about).not.toBeNull();
+    for (const item of [
+      'Full-stack web development',
+      'Frontend development',
+      'Backend development',
+      'Database development',
+      'UI/UX',
+      'Problem solving',
+      'Continuous learning',
+    ]) {
+      expect(within(about as HTMLElement).getByText(item)).toBeInTheDocument();
+    }
+  });
+
+  it('renders four stat cards', () => {
+    render(<Home />);
+    const stats = screen.getByTestId('about-stats');
+    const items = within(stats).getAllByRole('listitem');
+    expect(items).toHaveLength(4);
+    const texts = items.map((li) => (li.textContent ?? '').replace(/\s+/g, ' ').trim());
+    for (const stat of [
+      '3rd Year Computer Science Student',
+      'Full-Stack Development',
+      'Multiple Web Projects',
+      'Always Learning',
+    ]) {
+      expect(texts.some((t) => t.includes(stat))).toBe(true);
+    }
+  });
+
+  it('renders a footer with identity, location, and GitHub/Email links', () => {
+    render(<Home />);
+    const footer = screen.getByRole('contentinfo');
+    expect(within(footer).getByText(/Neil Justin Marcelo/)).toBeInTheDocument();
+    expect(within(footer).getByText(/Calbayog City, Samar, Philippines/)).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /GitHub/i })).toHaveAttribute(
+      'href',
+      'https://github.com/neiljustinmarcelo-tech'
+    );
+    expect(within(footer).getByRole('link', { name: /Email/i })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^mailto:neiljustinmarcelo@gmail\.com/)
+    );
   });
 });
