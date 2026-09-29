@@ -294,3 +294,57 @@ describe('projects showcase (ticket 04)', () => {
     );
   });
 });
+
+describe('experience + education (ticket 05)', () => {
+  beforeEach(resetTheme);
+  it('renders all eight experience activities with no employer or date fields', () => {
+    render(<Home />);
+    const experience = document.getElementById('experience') as HTMLElement;
+    expect(experience).not.toBeNull();
+    for (const activity of [
+      'Hardware maintenance',
+      'PC troubleshooting',
+      'OS installation',
+      'Thermal paste replacement',
+      'Asset inventory and documentation',
+      'Ticketing system support',
+      'Data scraping / mining',
+      'Technical support',
+    ]) {
+      expect(
+        within(experience).getByRole('heading', { name: new RegExp(activity, 'i') })
+      ).toBeInTheDocument();
+    }
+    expect(within(experience).queryByText(/20\d{2}/)).toBeNull();
+    expect(experience.querySelector('time')).toBeNull();
+  });
+
+  it('renders the education card with school, degree, year, skills, and academic projects', () => {
+    render(<Home />);
+    const education = document.getElementById('education') as HTMLElement;
+    expect(education).not.toBeNull();
+    expect(
+      within(education).getByText(/Christ the King College of Calbayog Inc\./i)
+    ).toBeInTheDocument();
+    expect(within(education).getByText(/Bachelor of Science/i)).toBeInTheDocument();
+    expect(within(education).getByText(/Computer Science/i)).toBeInTheDocument();
+    expect(within(education).getByText(/3rd Year/i)).toBeInTheDocument();
+    for (const skill of ['HTML', 'JavaScript', 'Python', 'Supabase', 'Git']) {
+      expect(within(education).getByText(skill)).toBeInTheDocument();
+    }
+    for (const project of ['MoneyTrack', 'Nevex E-Commerce', 'Personal Portfolio']) {
+      expect(
+        within(education).getByText(new RegExp(project, 'i'))
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('contains no fabricated employers, testimonials, or statistics in these sections', () => {
+    render(<Home />);
+    for (const id of ['experience', 'education']) {
+      const section = document.getElementById(id) as HTMLElement;
+      expect(within(section).queryByText(/testimonial/i)).toBeNull();
+      expect(within(section).queryByText(/\d+%|\d+x\b/i)).toBeNull();
+    }
+  });
+});

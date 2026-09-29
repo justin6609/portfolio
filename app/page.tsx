@@ -1,4 +1,6 @@
 import About from "../components/About";
+import Education from "../components/Education";
+import Experience from "../components/Experience";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Navbar from "../components/Navbar";
@@ -33,18 +35,8 @@ export default function Home() {
         <About />
         <Skills />
         <Projects />
-
-        <Section id="experience" title="Experience">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Technical experience and OJT activities timeline lands in ticket 05.
-          </p>
-        </Section>
-
-        <Section id="education" title="Education">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Christ the King College of Calbayog Inc. — BS Computer Science, 3rd Year.
-          </p>
-        </Section>
+        <Experience />
+        <Education />
         <Services />
 
         <Section id="contact" title="Let's Build Something Together">
