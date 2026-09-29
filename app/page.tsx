@@ -2,6 +2,8 @@ import About from "../components/About";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Navbar from "../components/Navbar";
+import Services from "../components/Services";
+import Skills from "../components/Skills";
 import { EMAIL_HREF, GITHUB_URL, LOCATION, REPOS_URL } from "../components/site";
 
 function Section({
@@ -28,12 +30,7 @@ export default function Home() {
       <main className="flex flex-1 flex-col">
         <Hero />
         <About />
-
-        <Section id="skills" title="Skills">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Frontend, Backend, Database, and Tools — full grids land in ticket 03.
-          </p>
-        </Section>
+        <Skills />
 
         <Section id="projects" title="Projects">
           <p className="text-zinc-600 dark:text-zinc-400">
@@ -59,6 +56,7 @@ export default function Home() {
             Christ the King College of Calbayog Inc. — BS Computer Science, 3rd Year.
           </p>
         </Section>
+        <Services />
 
         <Section id="contact" title="Let's Build Something Together">
           <p className="max-w-xl text-zinc-600 dark:text-zinc-400">

@@ -170,3 +170,78 @@ describe('hero + about + footer identity (ticket 02)', () => {
     );
   });
 });
+
+describe('skill groups + service offerings (ticket 03)', () => {
+  beforeEach(resetTheme);
+  it('renders all four skill groups with every listed skill', () => {
+    render(<Home />);
+    const skills = document.getElementById('skills') as HTMLElement;
+    expect(skills).not.toBeNull();
+    for (const group of ['Frontend', 'Backend', 'Database', 'Tools']) {
+      expect(within(skills).getByRole('heading', { name: new RegExp(group, 'i') })).toBeInTheDocument();
+    }
+    for (const skill of [
+      'HTML',
+      'CSS',
+      'JavaScript',
+      'TypeScript',
+      'React',
+      'Next.js',
+      'Tailwind CSS',
+      'Python',
+      'Flask',
+      'Node.js',
+      'REST APIs',
+      'Supabase',
+      'PostgreSQL',
+      'SQL',
+      'Git',
+      'GitHub',
+      'VS Code',
+      'Vercel',
+      'Figma',
+    ]) {
+      expect(within(skills).getByText(skill)).toBeInTheDocument();
+    }
+  });
+
+  it('renders all six service offerings with titles', () => {
+    render(<Home />);
+    const services = document.getElementById('services') as HTMLElement;
+    expect(services).not.toBeNull();
+    for (const title of [
+      'Full-Stack Web Development',
+      'Frontend Development',
+      'Backend Development',
+      'Database Integration',
+      'Responsive UI Development',
+      'API Development',
+    ]) {
+      expect(
+        within(services).getByRole('heading', { name: new RegExp(title, 'i') })
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('renders skill and service content with reduced motion respected', () => {
+    window.matchMedia = ((query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    })) as typeof window.matchMedia;
+    render(<Home />);
+    expect(
+      within(document.getElementById('skills') as HTMLElement).getByText('Tailwind CSS')
+    ).toBeInTheDocument();
+    expect(
+      within(document.getElementById('services') as HTMLElement).getByRole('heading', {
+        name: /API Development/i,
+      })
+    ).toBeInTheDocument();
+  });
+});
