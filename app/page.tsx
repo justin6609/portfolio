@@ -1,4 +1,5 @@
 import About from "../components/About";
+import Contact from "../components/Contact";
 import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Footer from "../components/Footer";
@@ -7,24 +8,6 @@ import Navbar from "../components/Navbar";
 import Projects from "../components/Projects";
 import Services from "../components/Services";
 import Skills from "../components/Skills";
-import { EMAIL_HREF, GITHUB_URL, LOCATION } from "../components/site";
-
-function Section({
-  id,
-  title,
-  children,
-}: {
-  id: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section id={id} className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-16 sm:px-6">
-      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-      <div className="mt-4">{children}</div>
-    </section>
-  );
-}
 
 export default function Home() {
   return (
@@ -38,18 +21,7 @@ export default function Home() {
         <Experience />
         <Education />
         <Services />
-
-        <Section id="contact" title="Let's Build Something Together">
-          <p className="max-w-xl text-zinc-600 dark:text-zinc-400">
-            I&apos;m currently open to internship, OJT, freelance, and entry-level
-            opportunities.
-          </p>
-          <div className="mt-4 flex flex-col gap-2 text-sm">
-            <a href={EMAIL_HREF}>neiljustinmarcelo@gmail.com</a>
-            <a href={GITHUB_URL}>github.com/neiljustinmarcelo-tech</a>
-            <span>{LOCATION}</span>
-          </div>
-        </Section>
+        <Contact />
       </main>
 
       <Footer />

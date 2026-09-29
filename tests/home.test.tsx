@@ -348,3 +348,115 @@ describe('experience + education (ticket 05)', () => {
     }
   });
 });
+
+function stubLocation() {
+  const original = window.location;
+  const stub = { href: 'http://localhost/' };
+  Object.defineProperty(window, 'location', {
+    value: stub,
+    writable: true,
+    configurable: true,
+  });
+  return {
+    stub,
+    restore() {
+      Object.defineProperty(window, 'location', {
+        value: original,
+        writable: true,
+        configurable: true,
+      });
+    },
+  };
+}
+
+describe('inquiry form + final gate (ticket 06)', () => {
+  beforeEach(resetTheme);
+  it('blocks empty submit with inline errors and no navigation', async () => {
+    const { restore, stub } = stubLocation();
+    try {
+      const user = userEvent.setup();
+      render(<Home />);
+      const contact = document.getElementById('contact') as HTMLElement;
+      await user.click(within(contact).getByRole('button', { name: /send message/i }));
+      expect(within(contact).getAllByRole('alert')).toHaveLength(4);
+      expect(stub.href).toBe('http://localhost/');
+    } finally {
+      restore();
+    }
+  });
+
+  it('blocks invalid email and short messages', async () => {
+    const { restore, stub } = stubLocation();
+    try {
+      const user = userEvent.setup();
+      render(<Home />);
+      const contact = document.getElementById('contact') as HTMLElement;
+      const form = contact.querySelector('form') as HTMLElement;
+      await user.type(within(form).getByLabelText(/^name/i), 'Recruiter');
+      await user.type(within(form).getByLabelText(/^email/i), 'not-an-email');
+      await user.type(within(form).getByLabelText(/^subject/i), 'Internship');
+      await user.type(within(form).getByLabelText(/^message/i), 'Hi');
+      await user.click(within(contact).getByRole('button', { name: /send message/i }));
+      const alerts = within(contact).getAllByRole('alert');
+      expect(alerts.length).toBeGreaterThanOrEqual(2);
+      expect(stub.href).toBe('http://localhost/');
+    } finally {
+      restore();
+    }
+  });
+
+  it('builds a correctly encoded mailto on valid submit', async () => {
+    const { restore, stub } = stubLocation();
+    try {
+      const user = userEvent.setup();
+      render(<Home />);
+      const contact = document.getElementById('contact') as HTMLElement;
+      const form = contact.querySelector('form') as HTMLElement;
+      await user.type(within(form).getByLabelText(/^name/i), 'Jane Recruiter');
+      await user.type(within(form).getByLabelText(/^email/i), 'jane@company.com');
+      await user.type(within(form).getByLabelText(/^subject/i), 'Freelance project');
+      await user.type(
+        within(form).getByLabelText(/^message/i),
+        'Hello Neil, I would like to discuss a project with you.'
+      );
+      await user.click(within(contact).getByRole('button', { name: /send message/i }));
+      expect(within(contact).queryByRole('alert')).toBeNull();
+      expect(stub.href).toMatch(/^mailto:neiljustinmarcelo@gmail\.com\?subject=Freelance%20project&body=/);
+      const body = decodeURIComponent(stub.href.split('&body=')[1]);
+      expect(body).toMatch(/Jane Recruiter/);
+      expect(body).toMatch(/jane@company\.com/);
+      expect(body).toMatch(/discuss a project/);
+    } finally {
+      restore();
+    }
+  });
+
+  it('shows Email, GitHub, and Location rows with working links and no LinkedIn', () => {
+    render(<Home />);
+    const contact = document.getElementById('contact') as HTMLElement;
+    expect(within(contact).getByText(/Calbayog City, Samar, Philippines/)).toBeInTheDocument();
+    expect(within(contact).getByRole('link', { name: /email/i })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^mailto:neiljustinmarcelo@gmail\.com/)
+    );
+    expect(within(contact).getByRole('link', { name: /github/i })).toHaveAttribute(
+      'href',
+      'https://github.com/neiljustinmarcelo-tech'
+    );
+    const hrefs = within(contact)
+      .getAllByRole('link')
+      .map((a) => (a as HTMLAnchorElement).href);
+    expect(hrefs.some((h) => h.includes('linkedin.com'))).toBe(false);
+  });
+
+  it('wires every Resume button to the mailto fallback with no 404', () => {
+    render(<Home />);
+    const resumeLinks = screen.getAllByRole('link', { name: /resume/i });
+    expect(resumeLinks.length).toBeGreaterThanOrEqual(1);
+    for (const link of resumeLinks) {
+      expect(link.getAttribute('href')).toMatch(
+        /^mailto:neiljustinmarcelo@gmail\.com\?subject=Resume%20Request$/
+      );
+    }
+  });
+});
