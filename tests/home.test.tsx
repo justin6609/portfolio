@@ -245,3 +245,52 @@ describe('skill groups + service offerings (ticket 03)', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('projects showcase (ticket 04)', () => {
+  beforeEach(resetTheme);
+  it('renders all three projects with names, descriptions, and tech badges', () => {
+    render(<Home />);
+    const projects = document.getElementById('projects') as HTMLElement;
+    expect(projects).not.toBeNull();
+    for (const name of ['MoneyTrack', 'Nevex E-Commerce', 'Personal Portfolio']) {
+      expect(
+        within(projects).getByRole('heading', { name: new RegExp(name, 'i') })
+      ).toBeInTheDocument();
+    }
+    expect(within(projects).getByText(/balances, income, expenses, savings/i)).toBeInTheDocument();
+    expect(within(projects).getByText(/product management, user accounts, admin dashboard/i)).toBeInTheDocument();
+    for (const badge of [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'shadcn/ui',
+      'Recharts',
+      'Flask',
+      'Jinja2',
+      'Supabase',
+      'Framer Motion',
+      'Vercel Analytics',
+    ]) {
+      expect(within(projects).getAllByText(badge).length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('shows no Repository, Live Demo, or View Details actions in V1', () => {
+    render(<Home />);
+    const projects = document.getElementById('projects') as HTMLElement;
+    expect(within(projects).queryByRole('link', { name: /repository/i })).toBeNull();
+    expect(within(projects).queryByRole('link', { name: /live demo/i })).toBeNull();
+    expect(within(projects).queryByRole('link', { name: /view details/i })).toBeNull();
+    expect(within(projects).queryByRole('button', { name: /view details/i })).toBeNull();
+  });
+
+  it('links View All Projects to the GitHub repositories tab', () => {
+    render(<Home />);
+    const projects = document.getElementById('projects') as HTMLElement;
+    expect(within(projects).getByRole('link', { name: /view all projects/i })).toHaveAttribute(
+      'href',
+      'https://github.com/neiljustinmarcelo-tech?tab=repositories'
+    );
+  });
+});

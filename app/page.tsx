@@ -2,9 +2,10 @@ import About from "../components/About";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Navbar from "../components/Navbar";
+import Projects from "../components/Projects";
 import Services from "../components/Services";
 import Skills from "../components/Skills";
-import { EMAIL_HREF, GITHUB_URL, LOCATION, REPOS_URL } from "../components/site";
+import { EMAIL_HREF, GITHUB_URL, LOCATION } from "../components/site";
 
 function Section({
   id,
@@ -31,19 +32,7 @@ export default function Home() {
         <Hero />
         <About />
         <Skills />
-
-        <Section id="projects" title="Projects">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            MoneyTrack, Nevex E-Commerce, and this portfolio — full showcase lands in
-            ticket 04.
-          </p>
-          <a
-            href={REPOS_URL}
-            className="mt-4 inline-block text-sm font-medium text-sky-600 dark:text-sky-400"
-          >
-            View All Projects
-          </a>
-        </Section>
+        <Projects />
 
         <Section id="experience" title="Experience">
           <p className="text-zinc-600 dark:text-zinc-400">
